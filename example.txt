@@ -1,0 +1,19 @@
+29.06.2021
+CC-2216
+20m Setting up gitlab authentication
+15m Test connectio and endpoint behaviour
+15m Add method to js api clint
+20m Talk with Jan and Tom and Jon
+
+30.06.2021
+CC-2216
+10m Sey up gitlab verification, connect 2-factor auth
+20m Send answers with personal footprint
+20m Disable button until footprint changes
+10m Trying to style disabled button
+
+02.07.2021
+CC-2216
+45m Refactoring personal impact calc on frontend
+30m Writing sql-quesry for last personal footprint
+30m Clashing with gradle build
