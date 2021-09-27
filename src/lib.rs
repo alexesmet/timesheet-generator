@@ -8,11 +8,13 @@ lazy_static! {
     static ref DATE_REGEX: regex::Regex 
         = Regex::new(r"^(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})$").unwrap();
     static ref LABEL_REGEX: regex::Regex
-        = Regex::new(r"(\w{2}-\d{1,6}|--)").unwrap();
+        = Regex::new(r"(\w{2,5}-\d{1,6}|--)").unwrap();
     static ref TIME_REGEX: regex::Regex
         = Regex::new(r"(\d{1,6})(h|m)").unwrap();
     static ref LOG_REGEX: regex::Regex 
         = Regex::new(r"^((?:\s*(?:\d{1,6}(?:h|m)))+)\s+([^\s].*)$").unwrap();
+    static ref COMM_REGEX: regex::Regex
+        = Regex::new(r"^#.+$").unwrap();
 }
 
 
@@ -82,6 +84,9 @@ enum ParsedLine<'a> {
 
 fn parse_line(line: &str) -> ParsedLine {
     if line.trim().is_empty() {
+        return ParsedLine::Empty;
+    }
+    if let Some(_) = COMM_REGEX.captures(line) {
         return ParsedLine::Empty;
     }
     if let Some(capture) = DATE_REGEX.captures(line) {
