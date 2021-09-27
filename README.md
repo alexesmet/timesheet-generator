@@ -22,6 +22,7 @@ CC-2422
 45m Refactoring on frontend
 30m Writing sql-quesry for last personal
 30m Clashing with gradle build
+# Comments are ignored
 ```
 
 Running `timesheet-generator timesheet.time` or `cat timesheet.time | timesheet-generator` generates the following in csv:

@@ -9,7 +9,7 @@ if exists("b:current_syntax")
 endif
 
 syn match timeDate     /\v^(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})$/
-syn match timeLabel    /\v(\w{2,5}-\d{1,6}|--)/
+syn match timeLabel    /\v(\[a-zA-Z]{2,5}-\d{1,6}|--)/
 syn match timeNotation /\v^((\s*(\d{1,6}(h|m)))+)/
 syn match timeComment  /\v^#.+$/
 
