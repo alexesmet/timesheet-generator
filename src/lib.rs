@@ -8,7 +8,7 @@ lazy_static! {
     static ref DATE_REGEX: regex::Regex 
         = Regex::new(r"^(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})$").unwrap();
     static ref LABEL_REGEX: regex::Regex
-        = Regex::new(r"(\w{2,5}-\d{1,6}|--)").unwrap();
+        = Regex::new(r"^(\w{2,5}-\d{1,6}|--)$").unwrap();
     static ref TIME_REGEX: regex::Regex
         = Regex::new(r"(\d{1,6})(h|m)").unwrap();
     static ref LOG_REGEX: regex::Regex 
@@ -64,7 +64,7 @@ pub fn get_records_from_file(filename: Option<&str>) -> Result<Vec<Record>, Time
             ParsedLine::Log { time, text } => {
                 let date = current_date.clone().ok_or(TimesheetParseError::DateNotPresent(i))?;
                 let label = current_label.clone().unwrap_or_else(||"--".to_owned());
-                let notation = TimeNotation::from_str(&time);
+                let notation = TimeNotation::from_str(time);
                 records.push(Record {
                     date, label, description: text.to_owned(),
                     time: notation.as_string(),
@@ -85,11 +85,11 @@ enum ParsedLine<'a> {
 }
 
 
-fn parse_line(line: &str) -> ParsedLine {
+fn parse_line(line: &'_ str) -> ParsedLine<'_> {
     if line.trim().is_empty() {
         return ParsedLine::Empty;
     }
-    if let Some(_) = COMM_REGEX.captures(line) {
+    if COMM_REGEX.captures(line).is_some() {
         return ParsedLine::Empty;
     }
     if let Some(capture) = DATE_REGEX.captures(line) {
@@ -104,7 +104,7 @@ fn parse_line(line: &str) -> ParsedLine {
             text: capture.get(2).unwrap().as_str(),
         };
     }
-    return ParsedLine::Unknown;
+    ParsedLine::Unknown
 }
 
 struct TimeNotation {
@@ -123,24 +123,24 @@ impl TimeNotation {
                 _   => { panic!("TIME_REGEX must make sure to onlu have 'h' or 'm' as time unit"); }
             }
         }
-        return Self { minutes };
+        Self { minutes }
     }
 
     fn as_string(&self) -> String {
         let hours = self.minutes / 60;
         let minutes = self.minutes % 60;
         if hours > 0 && minutes > 0 {
-            return format!("{}h {}m", hours, minutes);
+            format!("{}h {}m", hours, minutes)
         } else if hours > 0 {
-            return format!("{}h", hours);
+            format!("{}h", hours)
         } else if minutes > 0 {
-            return format!("{}m", minutes);
+            format!("{}m", minutes)
         } else {
-            return "0m".to_owned();
+            "0m".to_owned()
         }
     }
 
     fn as_hours(&self) -> f64 {
-        return self.minutes as f64 / 60.0;
+        self.minutes as f64 / 60.0
     }
 }

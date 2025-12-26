@@ -1,11 +1,10 @@
-use clap::{Clap, AppSettings};
 
-mod lib;
+use clap::Parser;
+use timesheet_generator::{TimesheetParseError, get_records_from_file};
 
 
-#[derive(Clap)]
-#[clap(setting = AppSettings::ColoredHelp)]
-#[clap(version = "0.3", author = "Alexei M. <alexesmet@gmail.com>",
+#[derive(Parser)]
+#[command(version = "0.3.1", author = "Alexei M. <alexes.met@gmail.com>",
     about = "Reads a file or stdin with specific timesheet format to produce CSV. See --help for more",
     long_about = "This program is used to simplify process of logging time. It follows UNIX-way philosophy, which allows to pipe input data into this program as well as specifying a file to read as a first parameter. This program expext input to have the following syntax:
 
@@ -25,14 +24,15 @@ CC-2460
 ```
     ")]
 struct Opts {
-    #[clap(name = "filename", about = "File to be parsed into timesheet.")]
+    /// File to be parsed into timesheet.
+    #[arg(name = "filename")]
     input: Option<String>
 }
 
 fn main() {
     let opts: Opts = Opts::parse();
 
-    match lib::get_records_from_file(opts.input.as_deref()) {
+    match get_records_from_file(opts.input.as_deref()) {
         Ok(records) => {
             let mut wrt = csv::Writer::from_writer(std::io::stdout()); 
             for each in records.iter() {
@@ -40,9 +40,9 @@ fn main() {
             }
         },
         Err(err) => match err {
-            lib::TimesheetParseError::IOError(e) => eprintln!("IO error: {:?}", e),
-            lib::TimesheetParseError::LineError(i, l) => eprintln!("Could not recognize line {}:\n{}",i,l),
-            lib::TimesheetParseError::DateNotPresent(i) => eprintln!("No date specified for line {}",i)
+            TimesheetParseError::IOError(e) => eprintln!("IO error: {:?}", e),
+            TimesheetParseError::LineError(i, l) => eprintln!("Could not recognize line {}:\n{}",i,l),
+            TimesheetParseError::DateNotPresent(i) => eprintln!("No date specified for line {}",i)
         }
     };
 }
