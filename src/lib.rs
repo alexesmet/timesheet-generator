@@ -54,7 +54,10 @@ pub fn get_records_from_file(filename: Option<&str>) -> Result<Vec<Record>, Time
     for (i, res_line) in buffered.lines().enumerate() {
         let line = res_line.map_err(TimesheetParseError::IOError)?;
         match parse_line(&line) {
-            ParsedLine::Date (date) => { current_date = Some(date.to_owned()) },
+            ParsedLine::Date (date) => { 
+                current_date = Some(date.to_owned());
+                current_label = Some("--".to_owned());
+            },
             ParsedLine::Label (label) => { current_label = Some(label.to_owned()) },
             ParsedLine::Empty => {},
             ParsedLine::Unknown => { return Err(TimesheetParseError::LineError(i, line.to_owned())); },
